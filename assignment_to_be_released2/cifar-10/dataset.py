@@ -5,6 +5,7 @@ import pickle
 import torch 
 import torchvision.transforms as tfs
 from PIL import Image
+import random
 
 class CIFAR10(torch.utils.data.Dataset):
     """
@@ -68,6 +69,7 @@ class CIFAR10(torch.utils.data.Dataset):
         
         # ------------TODO--------------
         # data augmentation
+        img = np.flip(img, axis=2).copy()  
         # ------------TODO--------------
 
         return img, target
@@ -99,12 +101,20 @@ if __name__ == '__main__':
 
     # --------------TODO------------------
     # Copy the first kind of your augmentation code here
+    img = np.array(img)
+    img = np.flip(img, axis=1).copy()
+    img =Image.fromarray(img)
     # --------------TODO------------------
     aug1 = img
     aug1.save(f'../results/Lenna_aug1.png')
 
     # --------------TODO------------------
     # Copy the second kind of your augmentation code here
+    img = np.array(img)
+    img = img.astype(np.float32) * 1.5  
+    img = np.clip(img, 0, 255)  
+    img = img.astype(np.uint8)
+    img =Image.fromarray(img)         
     # --------------TODO------------------
     aug2 = img
     aug2.save(f'../results/Lenna_aug2.png')

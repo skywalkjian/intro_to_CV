@@ -12,9 +12,16 @@ from torch.utils.tensorboard  import SummaryWriter
 def MyCELoss(pred, gt):
     # ----------TODO------------
     # Implement CE loss here
-    loss=-(pred*torch.log(gt)+(1-pred)*torch.log(1-gt)).mean()
+    pred = torch.softmax(pred, dim=1)
+
+    tmp = torch.zeros_like(pred)
+    tmp[range(gt.shape[0]), gt] = 1
+    
+
+    loss = torch.sum(-tmp*torch.log(pred+1e-9)).sum()/tmp.shape[0]
     # ----------TODO------------
     return loss 
+
 
 
 def validate(epoch, model, val_loader, writer):
@@ -35,6 +42,8 @@ def validate(epoch, model, val_loader, writer):
 
     # ----------TODO------------
     # draw accuracy curve!
+    writer.add_scalar('val/acc1', top1.avg, epoch)
+    writer.add_scalar('val/acc5', top5.avg, epoch)
     # ----------TODO------------
 
     print(' Val Acc@1 {top1.avg:.3f}'.format(top1=top1))
@@ -74,6 +83,9 @@ def train(epoch, model, optimizer, criterion, train_loader, writer):
             pass 
             # ----------TODO------------
             # draw loss curve and accuracy curve!
+            writer.add_scalar('train/loss', losses.avg, iteration)
+            writer.add_scalar('train/acc1', top1.avg, iteration)
+            writer.add_scalar('train/acc5', top5.avg, iteration)
             # ----------TODO------------
 
     print(' Epoch: %d'%(epoch))
@@ -142,7 +154,7 @@ if __name__ == '__main__':
     arg_parser.add_argument('--exp_name', '-e', type=str, required=True, help="The checkpoints and logs will be save in ./checkpoint/$EXP_NAME")
     arg_parser.add_argument('--lr', '-l', type=float, default=1e-4, help="Learning rate")
     arg_parser.add_argument('--save_freq', '-s', type=int, default=1, help="frequency of saving model")
-    arg_parser.add_argument('--total_epoch', '-t', type=int, default=10, help="total epoch number for training")
+    arg_parser.add_argument('--total_epoch', '-t', type=int, default=25, help="total epoch number for training")
     arg_parser.add_argument('--cont', '-c', action='store_true', help="whether to load saved checkpoints from $EXP_NAME and continue training")
     arg_parser.add_argument('--batchsize', '-b', type=int, default=20, help="batch size")
     args = arg_parser.parse_args()

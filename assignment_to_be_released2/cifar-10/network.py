@@ -18,11 +18,11 @@ class ConvNet(nn.Module):
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
         
         self.fc1 = nn.Linear(128 * 4 * 4, 512) 
-        self.fc2 = nn.Linear(512, 10)
+        self.fc2 = nn.Linear(512, num_class)
         
         # Dropout
         self.dropout = nn.Dropout(0.5)
-        
+        self.softmax= nn.Softmax(dim=1)
         # ----------TODO------------
 
     def forward(self, x):
@@ -44,11 +44,11 @@ class ConvNet(nn.Module):
         x=self.relu(x)
         x=self.pool(x)
         
+        x=x.view(-1, 128 * 4 * 4)
         x=self.fc1(x)
         x=self.relu(x)
         x=self.dropout(x)
         x=self.fc2(x)
-        
         # ----------TODO------------
 
         return x
@@ -64,7 +64,7 @@ if __name__ == '__main__':
     train_loader = torch.utils.data.DataLoader(
         train_dataset, batch_size=2, shuffle=False, num_workers=2)
     # Write a CNN graph. 
-    
+
     # Please save a figure/screenshot to '../results' for submission.
     for imgs, labels in train_loader:
         writer.add_graph(net, imgs)
