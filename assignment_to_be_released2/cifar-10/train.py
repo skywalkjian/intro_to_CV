@@ -12,7 +12,7 @@ from torch.utils.tensorboard  import SummaryWriter
 def MyCELoss(pred, gt):
     # ----------TODO------------
     # Implement CE loss here
-    loss=-(pred*torch.log(gt)+(1-pred)*torch.log(1-gt)).mean()
+    loss=-(gt*torch.log(pred)+(1-gt)*torch.log(1-pred)).sum()
     # ----------TODO------------
     return loss 
 
@@ -35,7 +35,9 @@ def validate(epoch, model, val_loader, writer):
 
     # ----------TODO------------
     # draw accuracy curve!
+    
     # ----------TODO------------
+    
 
     print(' Val Acc@1 {top1.avg:.3f}'.format(top1=top1))
     print(' Val Acc@5 {top5.avg:.3f}'.format(top5=top5))
