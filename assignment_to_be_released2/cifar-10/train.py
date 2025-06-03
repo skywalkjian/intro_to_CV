@@ -150,7 +150,7 @@ def run(args):
     return 
 
 if __name__ == '__main__':
-    arg_parser = argparse.ArgumentParser()S
+    arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('--exp_name', '-e', type=str, required=True, help="The checkpoints and logs will be save in ./checkpoint/$EXP_NAME")
     arg_parser.add_argument('--lr', '-l', type=float, default=1e-4, help="Learning rate")
     arg_parser.add_argument('--save_freq', '-s', type=int, default=1, help="frequency of saving model")
