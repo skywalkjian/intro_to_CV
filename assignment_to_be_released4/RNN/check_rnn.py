@@ -41,6 +41,7 @@ Wh = np.linspace(-0.4, 0.1, num=H*H).reshape(H, H)
 b = np.linspace(-0.7, 0.1, num=H)
 dout = np.linspace(-0.1, 0.2, num=N*T*H).reshape(N, T, H)
 
+#print(x.shape, h0.shape, Wx.shape, Wh.shape, b.shape, dout.shape)
 answer_dict = unit_test(x, h0, Wx, Wh, b, dout)
 gt_dict = np.load('results/reference_rnn.npy', allow_pickle=True).item()
 check_answer(answer_dict, gt_dict)

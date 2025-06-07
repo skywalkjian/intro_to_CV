@@ -16,7 +16,7 @@ num_classes = 4
 # get the model using the helper function
 model = utils.get_instance_segmentation_model(num_classes).double()
 
-model.load_state_dict(torch.load(r'your path to finetuned MaskRCnn', map_location='cpu'))
+model.load_state_dict(torch.load(r'./results/maskrcnn_1.pth', map_location='cpu'))
 
 
 model.eval()

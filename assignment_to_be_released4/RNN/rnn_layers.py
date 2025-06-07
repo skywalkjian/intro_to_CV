@@ -72,7 +72,8 @@ def rnn_step_forward(x, prev_h, Wx, Wh, b):
     # and cache variables respectively.                                          #
     ##############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-
+    next_h = np.tanh(x.dot(Wx) + prev_h.dot(Wh) + b)
+    cache = (x, prev_h, Wx, Wh, b, next_h)
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ##############################################################################
@@ -103,11 +104,20 @@ def rnn_step_backward(dnext_h, cache):
     # of the output value from tanh.                                             #
     ##############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-
+    x, prev_h, Wx, Wh, b, next_h = cache
+    dtanh = dnext_h * (1 - next_h**2)  # tanh的局部梯度
+    
+    dx = dtanh.dot(Wx.T)  # (N, D)
+    dprev_h = dtanh.dot(Wh.T)  # (N, H)
+    dWx = x.T.dot(dtanh)  # (D, H)
+    dWh = prev_h.T.dot(dtanh)  # (H, H)
+    db = np.sum(dtanh, axis=0)  # (H,)
+    
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ##############################################################################
     #                               END OF YOUR CODE                             #
     ##############################################################################
+    #print(dx.shape, dprev_h.shape, dWx.shape, dWh.shape, db.shape,123)
     return dx, dprev_h, dWx, dWh, db
 
 
@@ -129,19 +139,25 @@ def rnn_forward(x, h0, Wx, Wh, b):
     - h: Hidden states for the entire timeseries, of shape (N, T, H)
     - cache: Values needed in the backward pass
     """
-    h, cache = None, None
+    h, cache = np.zeros((x.shape[0], x.shape[1], Wh.shape[0])), []
     ##############################################################################
     # TODO: Implement forward pass for a vanilla RNN running on a sequence of    #
     # input data. You should use the rnn_step_forward function that you defined  #
     # above. You can use a for loop to help compute the forward pass.            #
     ##############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+    for i in range(x.shape[1]):
+        h0, cache0 = rnn_step_forward(x[:,i,:], h0, Wx, Wh, b)
+        h[:,i,:]=h0
+        cache.append(cache0)
+
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ##############################################################################
-    #                               END OF YOUR CODE                             #
+    #                               END OF YOUR CODE                             #                                                                                                                                        
     ##############################################################################
     return h, cache
+
 
 
 def rnn_backward(dh, cache):
@@ -162,14 +178,21 @@ def rnn_backward(dh, cache):
     - dWh: Gradient of hidden-to-hidden weights, of shape (H, H)
     - db: Gradient of biases, of shape (H,)
     """
-    dx, dh0, dWx, dWh, db = None, None, None, None, None
+    dx, dh0, dWx, dWh, db = np.zeros((dh.shape[0], dh.shape[1], cache[0][2].shape[0])), np.zeros((dh.shape[0], dh.shape[2])), np.zeros((cache[0][2].shape[0], dh.shape[2])), np.zeros((cache[0][3].shape[0], dh.shape[2])), np.zeros((dh.shape[2],))
     ##############################################################################
     # TODO: Implement the backward pass for a vanilla RNN running an entire      #
     # sequence of data. You should use the rnn_step_backward function that you   #
     # defined above. You can use a for loop to help compute the backward pass.   #
     ##############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-   
+    #print(dx.shape,12)
+    for i in range(dh.shape[1]-1,-1,-1):
+        dx[:,i,:],dh0,dWx_t,dWh_t,db_t=rnn_step_backward(dh[:,i,:]+dh0,cache[i])
+        #print(dx[:,i,:].shape, dh0.shape,dWx_t.shape, dWh_t.shape, db_t.shape,123)
+        dWx+=dWx_t
+        dWh+=dWh_t
+        db+=db_t
+            #print(dx[i,j,:].shape, dh0[i,:].shape,dWx,dWh,db,"oneback")
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ##############################################################################
     #                               END OF YOUR CODE                             #

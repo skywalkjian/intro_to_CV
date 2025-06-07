@@ -13,7 +13,7 @@ num_classes = 4 # 0 for backgroud
  
 model = utils.get_instance_segmentation_model(num_classes).double()
 
-model.load_state_dict(torch.load(r'your path to .pth',map_location='cpu'))
+model.load_state_dict(torch.load(r'./intro2cv_maskrcnn_pretrained.pth',map_location='cpu'))
 
 dataset = MultiShapeDataset(10)
 

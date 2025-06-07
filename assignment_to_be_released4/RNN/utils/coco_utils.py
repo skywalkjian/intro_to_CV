@@ -2,7 +2,7 @@ import os, json
 import numpy as np
 import h5py
 
-BASE_DIR = "datasets/coco"
+BASE_DIR = "./coco_captioning"
 
 def load_coco_data(base_dir=BASE_DIR, max_train=None, pca_features=True):
     print('base dir ', base_dir)
